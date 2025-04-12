@@ -12,7 +12,11 @@ from rest_framework import mixins, generics, viewsets
 from blogs.serializers import BlogSerializer, CommentSerializer
 from blogs.models import Blog, Comment
 from .paginations import CustomPagination
-
+from employees.filters import EmployeeFilter
+from employees.filters import BlogFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters import rest_framework as filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 
@@ -193,12 +197,23 @@ class EmployeeViewset(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = EmployeeFilter
+    search_fields = ['designation', 'emp_name']
+    ordering_fields = ['emp_id', 'emp_name'] 
 
 
 """ Blogs using generics  """
 class BlogsView(generics.ListCreateAPIView):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
+    filter_backends =  [SearchFilter, OrderingFilter]
+    filterset_class = BlogFilter
+    search_fields = ['blog_title', 'blog_body']
+    ordering_fields = ['id']
+    # filterset_fields = ('blog_title', 'blog_body')
+
+
 
 class CommentsView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
